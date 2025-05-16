@@ -1,4 +1,4 @@
-package com.goodjunseon.user_api.controller;
+package com.goodjunseon.user_api.domain.Home.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
