@@ -3,7 +3,7 @@ package com.goodjunseon.user_api.global.security.jwt.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goodjunseon.user_api.domain.member.model.request.MemberLoginReq;
 import com.goodjunseon.user_api.domain.member.security.CustomUserDetails;
-import com.goodjunseon.user_api.global.security.jwt.service.RefreshTokenService;
+import com.goodjunseon.user_api.global.security.jwt.service.JwtTokenService;
 import com.goodjunseon.user_api.global.security.util.JWTUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -27,7 +27,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final JWTUtil jwtUtil;
     private final ObjectMapper objectMapper;
     private final AuthenticationManager authenticationManager;
-    private final RefreshTokenService refreshTokenService;
+    private final JwtTokenService jwtTokenService;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -78,7 +78,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String refreshToken = jwtUtil.createRefreshToken(username); // refresh Token 생성
 
         // RefreshToken을 redis에 저장
-        refreshTokenService.save(username, refreshToken);
+        jwtTokenService.refreshTokenSave(username, refreshToken);
 
         // 응답 헤더에 토큰 추가
         response.setHeader("Authorization", "Bearer " + accessToken);
