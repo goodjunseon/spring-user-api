@@ -11,11 +11,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/member")
+@RequestMapping("/api/members")
 @RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService memberService;
+
 
     /*
      * User (CRUD) API 구현
@@ -42,4 +43,5 @@ public class MemberController {
                 .toList();
         return new BaseResponse<>(result);
     }
+
 }
