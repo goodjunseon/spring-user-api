@@ -14,7 +14,7 @@ import static com.goodjunseon.user_api.global.common.BaseResponseStatus.SUCCESS;
 @JsonPropertyOrder({"isSuccess", "code", "message", "data"})
 public class BaseResponse<T> {
 
-    @JsonProperty("isSucess")
+    @JsonProperty("isSuccess")
     private final boolean isSuccess;
     private final String message;
     private final int code;
