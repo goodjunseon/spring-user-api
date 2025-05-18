@@ -44,10 +44,10 @@ public class JWTFilter extends OncePerRequestFilter {
         if (jwtUtil.validateToken(token)) {
             String email = jwtUtil.getUsername(token);
             String role = jwtUtil.getRole(token);
-            UsernamePasswordAuthenticationToken authoToken =
+            UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(email, null, List.of(new SimpleGrantedAuthority(role)));
 
-            SecurityContextHolder.getContext().setAuthentication(authoToken);
+            SecurityContextHolder.getContext().setAuthentication(authToken);
         }
 
         filterChain.doFilter(request, response);

@@ -4,12 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goodjunseon.user_api.global.security.jwt.filter.JWTFilter;
 import com.goodjunseon.user_api.global.security.util.JWTUtil;
 import com.goodjunseon.user_api.global.security.jwt.filter.LoginFilter;
-import com.goodjunseon.user_api.global.security.jwt.service.RefreshTokenService;
+import com.goodjunseon.user_api.global.security.jwt.service.JwtTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,7 +28,7 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final ObjectMapper objectMapper;
-    private final RefreshTokenService refreshTokenService;
+    private final JwtTokenService jwtTokenService;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -53,12 +52,13 @@ public class SecurityConfig {
         // 경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/login", "/", "/api/join/**").permitAll()
+                        .requestMatchers("/api/login", "/", "/api/join/**"
+                        ,"api/auth/token/refresh").permitAll()
                         .requestMatchers("/api/admin").hasRole("ADMIN")
                         .anyRequest().authenticated());
 
         // LoginFilter에 URL 지정
-        LoginFilter loginFilter = new LoginFilter(jwtUtil, objectMapper, authenticationManager(authenticationConfiguration), refreshTokenService);
+        LoginFilter loginFilter = new LoginFilter(jwtUtil, objectMapper, authenticationManager(authenticationConfiguration), jwtTokenService);
         loginFilter.setFilterProcessesUrl("/api/login");
 
         // JWT 필터 등록
