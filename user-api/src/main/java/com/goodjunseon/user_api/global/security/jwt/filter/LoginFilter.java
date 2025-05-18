@@ -74,8 +74,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String username = authMember.getUsername();
 
         // JWT 토큰 발급
-        String accessToken = jwtUtil.createToken(idx, username, role);
-        String refreshToken = jwtUtil.createRefreshToken(username);
+        String accessToken = jwtUtil.createToken(idx, username, role); // access Token 생성
+        String refreshToken = jwtUtil.createRefreshToken(username); // refresh Token 생성
 
         // RefreshToken을 redis에 저장
         refreshTokenService.save(username, refreshToken);
