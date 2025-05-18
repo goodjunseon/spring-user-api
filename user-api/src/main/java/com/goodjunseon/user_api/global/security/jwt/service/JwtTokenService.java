@@ -1,8 +1,6 @@
 package com.goodjunseon.user_api.global.security.jwt.service;
 
 import com.goodjunseon.user_api.domain.member.repository.MemberRepository;
-import com.goodjunseon.user_api.global.common.BaseResponse;
-import com.goodjunseon.user_api.global.common.BaseResponseStatus;
 import com.goodjunseon.user_api.global.security.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,7 +17,7 @@ public class JwtTokenService {
 
     // Refresh Token을 Redis에 저장하는 메서드
     public void refreshTokenSave(String email, String refreshToken) {
-        Long expiration = jwtUtil.getExpiration(refreshToken);
+        Long expiration = jwtUtil.getExpiration(refreshToken); // 만료 시간
 
         redisTemplate.opsForValue().set("refreshToken:" + email, // key
                 refreshToken, // value
@@ -58,6 +56,4 @@ public class JwtTokenService {
         Long idx = member.getIdx();
         return jwtUtil.createToken(idx, email, role);
     }
-
-    // Refresh 토큰 재발급 로직 작성 예정.
 }
