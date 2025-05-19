@@ -1,5 +1,7 @@
 package com.goodjunseon.user_api.global.dto;
 
+import com.goodjunseon.user_api.global.response.ErrorType.ErrorType;
+import com.goodjunseon.user_api.global.response.SuccessType.SuccessType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
@@ -16,7 +18,13 @@ public class ApiRes<T> {
     @Schema(description = "응답 데이터", nullable = true)
     private final T data;
 
-//    public static <T> ApiRes<T> success()
+    public static <T> ApiRes<T> success(SuccessType code, T data) {
+        return new ApiRes<>(code.getCode(), code.getMessage(), data);
+    }
+
+    public static <T> ApiRes<T> fail(ErrorType code) {
+        return new ApiRes<>(code.getCode(), code.getMessage(), null);
+    }
 
 
 

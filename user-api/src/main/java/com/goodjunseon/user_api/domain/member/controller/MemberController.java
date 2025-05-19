@@ -9,10 +9,13 @@ import com.goodjunseon.user_api.global.dto.ApiRes;
 import com.goodjunseon.user_api.global.response.ErrorType.MemberErrorCode;
 import com.goodjunseon.user_api.global.response.SuccessType.MemberSuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +38,9 @@ public class MemberController {
     @Operation(summary = "회원가입", description = "사용자를 등록합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "회원가입 성공"),
+//            content = @Content(schema = @Schema(implementation = ApiRes.class))),
             @ApiResponse(responseCode = "409", description = "이메일 중복")
+//            content = @Content(schema = @Schema(implementation = ApiRes.class)))
     })
     @PostMapping("/signup")
     public ResponseEntity<ApiRes<Void>> signup(@RequestBody MemberJoinReq req) {
@@ -44,18 +49,11 @@ public class MemberController {
         boolean isSuccess = memberService.signup(req);
 
         if (isSuccess) {
-            return ResponseEntity.ok(new ApiRes<>(
-                    MemberSuccessCode.MEMBER_CREATED.getCode(),
-                    MemberSuccessCode.MEMBER_CREATED.getMessage(),
-                    null
-            ));
+            return ResponseEntity.ok(ApiRes.success(MemberSuccessCode.MEMBER_CREATED, null));
         } else {
             // 이메일 중복일 경우 Confilict 응답
-            return ResponseEntity.ok(new ApiRes<>(
-                    MemberErrorCode.DUPLICATE_EMAIL.getCode(),
-                    MemberErrorCode.DUPLICATE_EMAIL.getMessage(),
-                    null
-            ));
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(ApiRes.fail(MemberErrorCode.DUPLICATE_EMAIL));
         }
     }
 
