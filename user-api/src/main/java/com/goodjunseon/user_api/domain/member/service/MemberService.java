@@ -19,13 +19,13 @@ public class MemberService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // 회원가입 로직 구현
-    public BaseResponse<String> signup(MemberJoinReq req) {
+    public boolean signup(MemberJoinReq req) {
 
         // 이메일 중복 체크 로직
         boolean isEmailExists = memberRepository.existsByEmail(req.getEmail());
 
         if (isEmailExists) {
-            return new BaseResponse<>(BaseResponseStatus.INVALID_MEMBER_EMAIL);
+            return false; // 이메일이 이미 존재하는 경우
         }
 
         Member entity = Member.toMemberEntity(
@@ -35,7 +35,7 @@ public class MemberService {
                 Role.ADMIN // 기본값으로 ADMIN 권한 부여
         );
         memberRepository.save(entity);
-        return new BaseResponse<>("회원가입 성공"); // 회원가입 성공 메시지
+        return true; // 회원가입 성공
     }
 
     public List<Member> findAll() {
