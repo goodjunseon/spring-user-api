@@ -1,4 +1,4 @@
-package com.goodjunseon.user_api.config;
+package com.goodjunseon.user_api.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goodjunseon.user_api.global.security.jwt.filter.JWTFilter;
@@ -52,8 +52,11 @@ public class SecurityConfig {
         // 경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/login", "/", "/api/join/**"
-                        ,"api/auth/token/refresh").permitAll()
+                        .requestMatchers(
+                                "/swagger-ui/**", "/v3/api-docs/**",
+                                "/api/login", "/", "/api/join/**"
+                        ,"api/auth/token/refresh",
+                        "/webjars/**").permitAll()
                         .requestMatchers("/api/admin").hasRole("ADMIN")
                         .anyRequest().authenticated());
 
