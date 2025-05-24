@@ -3,6 +3,9 @@ package com.goodjunseon.user_api.global.security.jwt.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goodjunseon.user_api.domain.member.model.request.MemberLoginReq;
 import com.goodjunseon.user_api.domain.member.security.CustomUserDetails;
+import com.goodjunseon.user_api.global.dto.ApiRes;
+import com.goodjunseon.user_api.global.response.ErrorType.MemberErrorCode;
+import com.goodjunseon.user_api.global.response.SuccessType.MemberSuccessCode;
 import com.goodjunseon.user_api.global.security.jwt.service.JwtTokenService;
 import com.goodjunseon.user_api.global.security.util.JWTUtil;
 import jakarta.servlet.FilterChain;
@@ -20,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 @RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
@@ -62,14 +66,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         CustomUserDetails authMember = (CustomUserDetails) authResult.getPrincipal();
 
-
-
         //권한 정보 추출
         Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
-        String role = auth.getAuthority(); // ADMIN -> ROLE_ADMIN으로 변경
 
+        String role = auth.getAuthority(); // ADMIN -> ROLE_ADMIN으로 변경
         Long idx = authMember.getIdx();
         String username = authMember.getUsername();
 
@@ -77,12 +79,41 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String accessToken = jwtUtil.createToken(idx, username, role); // access Token 생성
         String refreshToken = jwtUtil.createRefreshToken(username); // refresh Token 생성
 
+        // 응답 헤더에 토큰 추가
+        response.setHeader("Authorization", "Bearer " + accessToken);
+        response.setHeader("Refresh", refreshToken);
+
+        // 응답 바디(JSON)
+        Map<String, String> tokenMap = Map.of(
+                "accessToken", accessToken,
+                "refreshToken", refreshToken
+        );
+
+        ApiRes<Map<String,String>> responseBody =
+                ApiRes.success(MemberSuccessCode.LOGIN_SUCCESS, tokenMap);
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
+
         // RefreshToken을 redis에 저장
         jwtTokenService.refreshTokenSave(username, refreshToken);
 
         // 응답 헤더에 토큰 추가
-        response.setHeader("Authorization", "Bearer " + accessToken);
-        response.setHeader("Refresh", refreshToken);
+//        response.setHeader("Authorization", "Bearer " + accessToken);
+//        response.setHeader("Refresh", refreshToken);
     }
 
+    @Override
+    public void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+                                            AuthenticationException failed) throws IOException, ServletException {
+
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        ApiRes<String> errorResponse = ApiRes.fail(MemberErrorCode.LOGIN_FAIL);
+
+        String json = objectMapper.writeValueAsString(errorResponse);
+        response.getWriter().write(json);
+    }
 }

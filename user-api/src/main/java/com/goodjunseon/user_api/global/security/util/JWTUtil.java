@@ -1,7 +1,5 @@
 package com.goodjunseon.user_api.global.security.util;
 
-import com.goodjunseon.user_api.domain.member.security.CustomUserDetailService;
-import com.goodjunseon.user_api.global.security.jwt.service.JwtTokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -17,8 +15,6 @@ import java.util.Date;
 public class JWTUtil {
 
     private SecretKey secretKey;
-    private JwtTokenService jwtTokenService;
-    private CustomUserDetailService customUserDetailService;
 
     @Value("${spring.jwt.secret}")
     private String secret;
@@ -48,7 +44,6 @@ public class JWTUtil {
     public String createRefreshToken(String email) {
         return Jwts.builder()
                 .setSubject(email)
-//                .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRED))
                 .signWith(secretKey)
@@ -110,7 +105,5 @@ public class JWTUtil {
             System.out.println("JWT 검증 실패: " + e.getMessage());
             return false;
         }
-
-
     }
 }
