@@ -89,19 +89,19 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 "refreshToken", refreshToken
         );
 
-        ApiRes<Map<String,String>> responsBody =
+        ApiRes<Map<String,String>> responseBody =
                 ApiRes.success(MemberSuccessCode.LOGIN_SUCCESS, tokenMap);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(responsBody));
+        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
 
         // RefreshToken을 redis에 저장
         jwtTokenService.refreshTokenSave(username, refreshToken);
 
         // 응답 헤더에 토큰 추가
-        response.setHeader("Authorization", "Bearer " + accessToken);
-        response.setHeader("Refresh", refreshToken);
+//        response.setHeader("Authorization", "Bearer " + accessToken);
+//        response.setHeader("Refresh", refreshToken);
     }
 
     @Override
