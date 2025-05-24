@@ -4,16 +4,14 @@ import com.goodjunseon.user_api.domain.member.model.entity.Member;
 import com.goodjunseon.user_api.domain.member.model.request.MemberJoinReq;
 import com.goodjunseon.user_api.domain.member.model.response.MemberRes;
 import com.goodjunseon.user_api.domain.member.service.MemberService;
-import com.goodjunseon.user_api.global.common.BaseResponse;
 import com.goodjunseon.user_api.global.dto.ApiRes;
 import com.goodjunseon.user_api.global.response.ErrorType.MemberErrorCode;
 import com.goodjunseon.user_api.global.response.SuccessType.MemberSuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +41,7 @@ public class MemberController {
 //            content = @Content(schema = @Schema(implementation = ApiRes.class)))
     })
     @PostMapping("/signup")
-    public ResponseEntity<ApiRes<Void>> signup(@RequestBody MemberJoinReq req) {
+    public ResponseEntity<ApiRes<Void>> signup(@Valid @RequestBody MemberJoinReq req) {
 
         // 회원가입 처리 로직
         boolean isSuccess = memberService.signup(req);
@@ -59,15 +57,16 @@ public class MemberController {
 
     // 전체 사용자 목록 조회
     @Operation(summary = "전체 사용자 조회", description = "등록된 모든 사용자 목록을 반환합니다.")
+
     @GetMapping("/getAll")
-    public BaseResponse<List<MemberRes>> getAllMembers() {
+    public ResponseEntity<ApiRes<List<MemberRes>>> getAllMembers() {
         // 사용자 목록 조회 로직
         // 예시로 "사용자 목록" 문자열 반환
         List<Member> members = memberService.findAll();
         List<MemberRes> result = members.stream()
                 .map(MemberRes::toMemberDTO)
                 .toList();
-        return new BaseResponse<>(result);
+        return ResponseEntity.ok(ApiRes.success((MemberSuccessCode.MEMBER_VIEW), result));
     }
 
 
