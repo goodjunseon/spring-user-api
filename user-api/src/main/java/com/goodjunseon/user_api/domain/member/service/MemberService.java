@@ -4,8 +4,6 @@ import com.goodjunseon.user_api.domain.member.model.request.MemberJoinReq;
 import com.goodjunseon.user_api.domain.member.model.entity.Member;
 import com.goodjunseon.user_api.domain.member.model.entity.Role;
 import com.goodjunseon.user_api.domain.member.repository.MemberRepository;
-import com.goodjunseon.user_api.global.common.BaseResponse;
-import com.goodjunseon.user_api.global.common.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
