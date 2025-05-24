@@ -1,8 +1,6 @@
 package com.goodjunseon.user_api.domain.member.controller;
 
 import com.goodjunseon.user_api.domain.member.service.AuthService;
-import com.goodjunseon.user_api.global.common.BaseResponse;
-import com.goodjunseon.user_api.global.common.BaseResponseStatus;
 import com.goodjunseon.user_api.global.dto.ApiRes;
 import com.goodjunseon.user_api.global.response.ErrorType.MemberErrorCode;
 import com.goodjunseon.user_api.global.response.SuccessType.MemberSuccessCode;
@@ -51,16 +49,22 @@ public class AuthController {
 
 
     @Operation(summary = "로그아웃", description = "사용자가 로그아웃합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그아웃 성공"),
+            @ApiResponse(responseCode = "401", description = "로그아웃 실패")
+    })
     @PostMapping("/logout")
-    public BaseResponse<String> logout(HttpServletRequest request) {
+    public ResponseEntity<ApiRes<String>> logout(HttpServletRequest request) {
 
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
+
         if (authorization == null || !authorization.startsWith("Bearer ")) {
-            return new BaseResponse<>(BaseResponseStatus.FAIL);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiRes.fail(MemberErrorCode.INVALID_TOKEN));
         }
 
         String accessToken = authorization.substring(7); // Bearer 제거
         authService.logout(accessToken); // 서비스 계층에서 로그아웃 처리
-        return new BaseResponse<>("로그아웃 성공");
+        return ResponseEntity.ok(ApiRes.success(MemberSuccessCode.LOGOUT_SUCCESS, null));
     }
 }
